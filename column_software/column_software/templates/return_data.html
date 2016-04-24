@@ -19,7 +19,7 @@
             $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
             $.getJSON($SCRIPT_ROOT+"/_update",
                 function(data) {
-                    $("#info").text(data.info)
+                    $("#data_text").text(data.data_text)
                 });
   }
   
@@ -28,7 +28,7 @@
 </script>
 <strong>Data feed</strong>
 <div id="output" style="height:500px;width:500px;border:1px solid #ccc;font:16px/26px Georgia, Garamond, Serif;overflow:auto;">
-  <pre><div id="info"></div></pre>
+  <pre><div id="data_text"></div></pre>
 </div>
 
 <button type="button" id="stopBtn" name="stopBtn">Stop thread</button><br><br>

@@ -14,15 +14,25 @@ app = Flask(__name__)
 
 @app.route('/')
 def return_data():
-    """answer request for data"""
+    """display data"""
     return render_template('return_data.html')
     
 @app.route('/flot')
 def return_flot():
-    """answer request for data"""
+    """display flot example"""
     return render_template('realtime.html')
+    
+@app.route('/myflot')
+def return_my_flot():
+    """display my flot"""
+    return render_template('basicflot.html')
     
 @app.route('/_update', methods= ['GET'])
 def update():
-    info=dp.format_data(dp.data_text)
-    return jsonify(info=info)
+    return jsonify(data_text=dp.format_data(dp.data_text),
+                   data_raw=dp.data_raw)
+
+@app.route('/_updatemyflot')
+def update_flot():
+    return jsonify(data=dp.data_raw)
+    

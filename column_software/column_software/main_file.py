@@ -23,7 +23,7 @@ except:
     data_feed = dp.Random_Data_Feed()
 
 try:
-    thread = dp.Data_Collector(thread_name,data_feed,dp.data_text)
+    thread = dp.Data_Collector(thread_name,data_feed,dp.data_text,dp.data_raw)
     thread.start()
     dp.data_text.append("Thread {} started".format(thread_name))
 except:

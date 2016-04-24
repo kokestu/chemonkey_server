@@ -13,6 +13,8 @@ import random
 
 #initialize data in text format
 data_text = []
+#initialise raw data
+data_raw = []
 #intialize data list lock
 data_lock = threading.Lock()
 
@@ -23,12 +25,14 @@ def debug(string):
 class Data_Collector(threading.Thread):
     """thread that manages data collection"""
 
-    def __init__ (self, threadName, feed, data):
+    def __init__ (self, threadName, feed, data_text, data_raw):
         threading.Thread.__init__(self)
         self.threadName = threadName
         self.feed = feed
-        self.data = data
+        self.data_text = data_text
+        self.data_raw = data_raw
         self.empty = 0
+        self.count = 0
         self.stop = False
 
     def run(self):
@@ -48,7 +52,9 @@ class Data_Collector(threading.Thread):
                     add = "FRACTION"
                 message = "{}  {}   v={}".format(build_time(), add, value)
                 data_lock.acquire()
-                self.data.append(message)
+                self.data_text.append(message)
+                self.data_raw.append([self.count,value])
+                self.count = self.count + 1
                 data_lock.release()
             prev = value
             time.sleep(0.9)
@@ -67,10 +73,12 @@ class Random_Data_Feed:
     """Feeds random data"""
     
     def __init__(self):
-        self.current = 320 #base reading (empty)
+        self.empty = 320 #base reading (empty)
+        self.current = 320
         
     def get_data_point(self):
-        self.current = round(self.current + random.random()*10 - 5,2)
+        shift = (self.empty - self.current)/10
+        self.current = round(self.current + random.random()*6 - 3 + shift,2)
         return self.current
 
 def build_time():
