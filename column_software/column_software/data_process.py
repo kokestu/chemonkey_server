@@ -9,46 +9,69 @@ Created on Sat Jan 30 10:27:01 2016
 
 import threading
 import time
+import random
 
-#initialize data list
-data_list = []
+#initialize data in text format
+data_text = []
 #intialize data list lock
 data_lock = threading.Lock()
 
-class data_collector(threading.Thread):
+def debug(string):
+    """debug function"""
+    data_text.append("DEBUG: {}".format(string))
+
+class Data_Collector(threading.Thread):
     """thread that manages data collection"""
 
-    def __init__ (self, threadName, ser, data):
-        print threadName
+    def __init__ (self, threadName, feed, data):
         threading.Thread.__init__(self)
         self.threadName = threadName
-        self.ser = ser
+        self.feed = feed
         self.data = data
         self.empty = 0
         self.stop = False
 
     def run(self):
         time.sleep(2)
-        self.empty = 320 #calibrate_at_current(self.ser)
-        read_value = 0
+        self.empty = 320
+        value = 0
         prev = 0
         while not self.stop:
             try:
-                read_value = int(self.ser.readline().rstrip()[0:3])
+                value = self.feed.get_data_point()
             except:
-                read_value = prev
-            if read_value != prev:
-                if read_value - self.empty > -5 :
+                value = prev
+            if value != prev:
+                if value - self.empty > -5 :
                     add = "EMPTY   "
                 else:
                     add = "FRACTION"
-                message = "{}  {}   v={}".format(build_time(), add, read_value)
+                message = "{}  {}   v={}".format(build_time(), add, value)
                 data_lock.acquire()
                 self.data.append(message)
                 data_lock.release()
-            prev = read_value
+            prev = value
             time.sleep(0.9)
         return
+        
+class Arduino_Data_Feed:
+    """Feeds data from an Arduino serial port"""
+    
+    def __init__(self, ser):
+        self.ser = ser
+        
+    def get_data_point(self):
+        return int(self.ser.readline().rstrip()[0:3])
+        
+class Random_Data_Feed:
+    """Feeds random data"""
+    
+    def __init__(self):
+        self.current = 320 #base reading (empty)
+        
+    def get_data_point(self):
+        self.current = round(self.current + random.random()*10 - 5,2)
+        return self.current
 
 def build_time():
     """builds a string of the current time"""
