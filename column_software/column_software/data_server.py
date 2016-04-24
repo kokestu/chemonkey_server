@@ -22,7 +22,7 @@ def return_flot():
     """display flot example"""
     return render_template('realtime.html')
     
-@app.route('/myflot')
+@app.route('/liveplot')
 def return_my_flot():
     """display my flot"""
     return render_template('basicflot.html')
@@ -34,5 +34,5 @@ def update():
 
 @app.route('/_updatemyflot')
 def update_flot():
-    return jsonify(data=dp.data_raw)
+    return jsonify(data=dp.data_raw[-12000:])
     

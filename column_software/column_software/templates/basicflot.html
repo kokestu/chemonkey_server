@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>Flot Examples: Basic Usage</title>
+	<title>Plot of column sensor readings over time</title>
 	<script type=text/javascript src="{{
        url_for('static', filename='jquery.js') }}"></script>
 	<script type=text/javascript src="{{
@@ -12,20 +12,31 @@
 	var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 
 	$(function() {
-	
-		function update_values() {
-            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+		
+		var updateInterval = 50;
+		function update() {
+			$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
             $.getJSON($SCRIPT_ROOT+"/_updatemyflot",
                 function(data) {
-                    $.plot("#placeholder", [ data ]);
+                    $.plot("#placeholder", [ data ], {
+						series: {
+							lines : {
+								fill : true
+							},
+							shadowSize: 0	// Drawing is faster without shadows
+						},
+						yaxis: {
+							min: 310,
+							max: 335
+						},
+						xaxis: {
+							show: true
+						}
+					});
                 });
+				setTimeout(update, updateInterval);
 		}
-
-		update_values();
-		
-		setInterval(update_values, 1000);
-
-		$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+		update();
 	});
 
 	</script>
@@ -33,7 +44,7 @@
 <body>
 
 	<div id="header">
-		<h2>Basic Usage</h2>
+		<h2>Live plot of sensor readings against time</h2>
 	</div>
 
 	<div id="content">
@@ -42,14 +53,8 @@
 			<div id="placeholder" class="demo-placeholder" style="width:850px; height:450px;"></div>
 		</div>
 
-		<p>You don't have to do much to get an attractive plot.  Create a placeholder, make sure it has dimensions (so Flot knows at what size to draw the plot), then call the plot function with your data.</p>
+		<p>This graph plots the CHEMonkey reading against seconds since the start of the experiment.</p>
 
-		<p>The axes are automatically scaled.</p>
-
-	</div>
-
-	<div id="footer">
-		Copyright &copy; 2007 - 2014 IOLA and Ole Laursen
 	</div>
 
 </body>

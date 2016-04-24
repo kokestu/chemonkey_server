@@ -46,18 +46,19 @@ class Data_Collector(threading.Thread):
             except:
                 value = prev
             if value != prev:
-                if value - self.empty > -5 :
-                    add = "EMPTY   "
-                else:
-                    add = "FRACTION"
-                message = "{}  {}   v={}".format(build_time(), add, value)
                 data_lock.acquire()
-                self.data_text.append(message)
-                self.data_raw.append([self.count,value])
+                if self.count % 20 == 0:
+                    if value - self.empty > -5 :
+                        add = "EMPTY   "
+                    else:
+                        add = "FRACTION"
+                    message = "{}  {}   v={}".format(build_time(), add, value)
+                    self.data_text.append(message)
+                self.data_raw.append([self.count/20,value])
                 self.count = self.count + 1
                 data_lock.release()
             prev = value
-            time.sleep(0.9)
+            time.sleep(0.05)
         return
         
 class Arduino_Data_Feed:
