@@ -19,7 +19,6 @@ class data_collector(threading.Thread):
     """thread that manages data collection"""
 
     def __init__ (self, threadName, ser, data):
-        print threadName
         threading.Thread.__init__(self)
         self.threadName = threadName
         self.ser = ser
@@ -47,6 +46,24 @@ class data_collector(threading.Thread):
                 self.data.append(message)
                 data_lock.release()
             prev = read_value
+            time.sleep(0.9)
+        return
+        
+class fake_data_collector(threading.Thread):
+    """thread that fakes data collection"""
+
+    def __init__ (self, threadName, ser, data):
+        threading.Thread.__init__(self)
+        self.threadName = threadName
+        self.ser = ser
+        self.data = data
+        self.empty = 0
+        self.stop = False
+
+    def run(self):
+        time.sleep(2)
+        while not self.stop:
+            self.data.append(time.gmtime().tm_sec)
             time.sleep(0.9)
         return
 

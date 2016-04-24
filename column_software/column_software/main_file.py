@@ -17,19 +17,20 @@ thread_name = "data1"
 try:
     ser = serial.Serial(port, 9600) #for Windows
     dp.data_list.append("serial port opened")
+    thread = dp.data_collector(thread_name,ser,dp.data_list)
 except:
-    dp.data_list.append("Arduino unavailable, serial port access failed")
+    dp.data_list.append("Arduino unavailable, serial port access failed. Using fake data.")
+    thread = dp.fake_data_collector(thread_name,None,dp.data_list)
 
 try:
-    thread = dp.data_collector(thread_name,ser,dp.data_list)
     thread.start()
     dp.data_list.append("thread {} started".format(thread_name))
 except:
-    dp.data_list.append("starting thread {} failed".format(thread_name))
+    dp.data_list.append("Starting thread {} failed".format(thread_name))
     
 @ds.app.route('/_stop', methods= ['GET'])
 def stop():
-    print "hello"
+    print("thread stopped remotely")
     thread.stop = True
 
 ## START SERVER ##  

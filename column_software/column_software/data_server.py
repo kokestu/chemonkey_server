@@ -17,7 +17,12 @@ def return_data():
     """answer request for data"""
     return render_template('return_data.html')
     
+@app.route('/flot')
+def check_flot():
+    """answer request for flot"""
+    return render_template('realtime.html')
+    
 @app.route('/_update', methods= ['GET'])
 def update():
-    info=dp.format_data(dp.data_list)
-    return jsonify(info=info)
+    return jsonify(raw="{}".format(dp.time.gmtime().tm_sec),
+                   formatted=dp.format_data(dp.data_list))

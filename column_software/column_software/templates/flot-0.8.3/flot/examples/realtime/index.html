@@ -1,40 +1,13 @@
-{% extends "layout.html" %}
-{% block content %}
-<script type="text/javascript">
-
-$(function(){
-
-   $(document).ready(function() {
-    $("#stopBtn").click(function(){
-        stop();
-    }); 
-   });
-  
-  function stop() {
-        $.getJSON($SCRIPT_ROOT+"/_stop")
-  }
-  
-  function update_values() {
-            $.getJSON($SCRIPT_ROOT+"/_update",
-                function(data) {
-                    $("#formatted").text(data.formatted);
-					$("#raw").text(data.raw);
-                });
-  }
-  
-  setInterval(update_values, 1000);
-  
-  });
-
-</script>
-<strong>Data feed</strong>
-<div id="output" style="height:500px;width:500px;border:1px solid #ccc;font:16px/26px Georgia, Garamond, Serif;overflow:auto;">
-  <pre><div id="formatted"></div></pre>
-</div>
-
-<button type="button" id="stopBtn" name="stopBtn">Stop thread</button><br><br>
-
-<script type="text/javascript">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Flot Examples: Real-time updates</title>
+	<link href="../examples.css" rel="stylesheet" type="text/css">
+	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../../excanvas.min.js"></script><![endif]-->
+	<script language="javascript" type="text/javascript" src="../../jquery.js"></script>
+	<script language="javascript" type="text/javascript" src="../../jquery.flot.js"></script>
+	<script type="text/javascript">
 
 	$(function() {
 
@@ -43,41 +16,6 @@ $(function(){
 
 		var data = [],
 			totalPoints = 300;
-			
-		var y = 0;
-			
-		function getData() {
-		
-			while (data.length < totalPoints) {
-				
-				$.get($SCRIPT_ROOT+"/_update",
-                function(data) {
-					y = parseInt(data.raw);
-					alert("got here " + y);
-                });
-			
-				//alert(y);
-				//alert($("#raw").text());
-			
-				if (y < 0) {
-					y = 0;
-				} else if (y > 100) {
-					y = 100;
-				}
-			
-				data.push(y);
-			}
-			
-			// Zip the generated y values with the x values
-
-			var res = [];
-			for (var i = 0; i < data.length; ++i) {
-				res.push([i, data[i]])
-			}
-
-			return res;
-		
-		}
 
 		function getRandomData() {
 
@@ -126,7 +64,7 @@ $(function(){
 			}
 		});
 
-		var plot = $.plot("#placeholder", [ getData() ], {
+		var plot = $.plot("#placeholder", [ getRandomData() ], {
 			series: {
 				shadowSize: 0	// Drawing is faster without shadows
 			},
@@ -141,7 +79,7 @@ $(function(){
 
 		function update() {
 
-			plot.setData([getData()]);
+			plot.setData([getRandomData()]);
 
 			// Since the axes don't change, we don't need to call plot.setupGrid()
 
@@ -157,7 +95,8 @@ $(function(){
 	});
 
 	</script>
-
+</head>
+<body>
 
 	<div id="header">
 		<h2>Real-time updates</h2>
@@ -166,7 +105,7 @@ $(function(){
 	<div id="content">
 
 		<div class="demo-container">
-			<div id="placeholder" class="demo-placeholder" style="width:850px; height:450px;"></div>
+			<div id="placeholder" class="demo-placeholder"></div>
 		</div>
 
 		<p>You can update a chart periodically to get a real-time effect by using a timer to insert the new data in the plot and redraw it.</p>
@@ -179,4 +118,5 @@ $(function(){
 		Copyright &copy; 2007 - 2014 IOLA and Ole Laursen
 	</div>
 
-{% endblock %}
+</body>
+</html>
