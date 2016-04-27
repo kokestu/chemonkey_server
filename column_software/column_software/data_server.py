@@ -17,15 +17,15 @@ def return_data():
     """display data"""
     return render_template('return_data.html')
     
-@app.route('/flot')
-def return_flot():
-    """display flot example"""
-    return render_template('realtime.html')
-    
 @app.route('/liveplot')
 def return_my_flot():
     """display my flot"""
     return render_template('basicflot.html')
+    
+@app.route('/examples.css')
+def return_css():
+    """provide stylesheet"""
+    return app.send_static_file('examples.css')
     
 @app.route('/_update', methods= ['GET'])
 def update():
@@ -34,5 +34,5 @@ def update():
 
 @app.route('/_updatemyflot')
 def update_flot():
-    return jsonify(data=dp.data_raw[-12000:])
+    return jsonify(data=dp.data_raw[-60:])
     

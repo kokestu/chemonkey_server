@@ -10,6 +10,7 @@ Created on Sat Jan 30 12:24:35 2016
 import data_process as dp
 import data_server as ds
 import serial
+import sys
 
 port = 'COM3'
 thread_name = "data1"
@@ -23,11 +24,16 @@ except:
     data_feed = dp.Random_Data_Feed()
 
 try:
-    thread = dp.Data_Collector(thread_name,data_feed,dp.data_text,dp.data_raw)
-    thread.start()
-    dp.data_text.append("Thread {} started".format(thread_name))
-except:
-    dp.data_text.append("Starting thread {} failed".format(thread_name))
+    try:
+        thread = dp.Data_Collector(thread_name,data_feed,dp.data_text,dp.data_raw)
+        thread.start()
+        dp.data_text.append("Thread {} started".format(thread_name))
+    except:
+        dp.data_text.append("Starting thread {} failed".format(thread_name))  
+except (KeyboardInterrupt, SystemExit):
+    thread.stop()
+    sys.exit()
+
     
 @ds.app.route('/_stop', methods= ['GET'])
 def stop():
@@ -36,4 +42,4 @@ def stop():
 
 ## START SERVER ##  
 if __name__ == '__main__':
-    ds.app.run(host='0.0.0.0')
+    ds.app.run()#host='0.0.0.0')

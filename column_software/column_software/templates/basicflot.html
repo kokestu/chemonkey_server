@@ -3,6 +3,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>Plot of column sensor readings over time</title>
+	<link href="./examples.css" rel="stylesheet" type="text/css">
 	<script type=text/javascript src="{{
        url_for('static', filename='jquery.js') }}"></script>
 	<script type=text/javascript src="{{
@@ -13,7 +14,7 @@
 
 	$(function() {
 		
-		var updateInterval = 50;
+		var updateInterval = 1200;
 		function update() {
 			$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
             $.getJSON($SCRIPT_ROOT+"/_updatemyflot",
@@ -26,8 +27,8 @@
 							shadowSize: 0	// Drawing is faster without shadows
 						},
 						yaxis: {
-							min: 310,
-							max: 335
+							min: 0,
+							max: 150
 						},
 						xaxis: {
 							show: true
@@ -50,7 +51,7 @@
 	<div id="content">
 
 		<div class="demo-container">
-			<div id="placeholder" class="demo-placeholder" style="width:850px; height:450px;"></div>
+			<div id="placeholder" class="demo-placeholder"></div>
 		</div>
 
 		<p>This graph plots the CHEMonkey reading against seconds since the start of the experiment.</p>

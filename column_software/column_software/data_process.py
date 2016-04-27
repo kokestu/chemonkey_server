@@ -17,6 +17,8 @@ data_text = []
 data_raw = []
 #intialize data list lock
 data_lock = threading.Lock()
+#sampling interval (seconds)
+INTERVAL = 1
 
 def debug(string):
     """debug function"""
@@ -37,7 +39,7 @@ class Data_Collector(threading.Thread):
 
     def run(self):
         time.sleep(2)
-        self.empty = 320
+        self.empty = calibrate_at_current(self.feed)
         value = 0
         prev = 0
         while not self.stop:
@@ -47,18 +49,21 @@ class Data_Collector(threading.Thread):
                 value = prev
             if value != prev:
                 data_lock.acquire()
-                if self.count % 20 == 0:
-                    if value - self.empty > -5 :
+                value = 2*self.empty - value
+                value = value - self.empty + 20
+                if self.count % (1/INTERVAL) == 0:
+                    if value > 35 :
                         add = "EMPTY   "
                     else:
                         add = "FRACTION"
+                    
                     message = "{}  {}   v={}".format(build_time(), add, value)
                     self.data_text.append(message)
-                self.data_raw.append([self.count/20,value])
+                self.data_raw.append([self.count*INTERVAL,value])
                 self.count = self.count + 1
                 data_lock.release()
             prev = value
-            time.sleep(0.05)
+            time.sleep(INTERVAL)
         return
         
 class Arduino_Data_Feed:
@@ -96,14 +101,17 @@ def build_time():
         s = "0"+s
     return "[{}:{}:{}]".format(h,m,s)
 
-def calibrate_at_current(ser, n=10):
-    """reads n (default 10) values from the serial port and returns their average"""
-    values = []
-    for i in range(1,10):
-        value = int(ser.readline().rstrip()[0:3])
-        values.append(value)
-        time.sleep(0.1)
-    return sum(values)/len(values) #return average
+def calibrate_at_current(feed, n=10):
+    """reads n (default 10) values from the data feed and returns their average"""
+    try:
+        values = []
+        for i in range(1,10):
+            value = feed.get_data_point()
+            values.append(value)
+            time.sleep(0.1)
+        return sum(values)/len(values) #return average
+    except:
+        return 320
     
 def format_data(thing):
     """formats data list into string"""
