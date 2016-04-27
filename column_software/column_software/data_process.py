@@ -43,6 +43,7 @@ class Data_Collector(threading.Thread):
         value = 0
         prev = 0
         while not self.stop:
+            print("{} running".format(self.threadName))
             try:
                 value = self.feed.get_data_point()
             except:
@@ -50,13 +51,12 @@ class Data_Collector(threading.Thread):
             if value != prev:
                 data_lock.acquire()
                 value = 2*self.empty - value
-                value = value - self.empty + 20
+                value = round(value - self.empty + 20,2)
                 if self.count % (1/INTERVAL) == 0:
-                    if value > 35 :
+                    if value < 35 :
                         add = "EMPTY   "
                     else:
-                        add = "FRACTION"
-                    
+                        add = "FRACTION"                    
                     message = "{}  {}   v={}".format(build_time(), add, value)
                     self.data_text.append(message)
                 self.data_raw.append([self.count*INTERVAL,value])
